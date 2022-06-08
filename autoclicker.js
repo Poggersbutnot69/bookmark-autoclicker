@@ -1,72 +1,43 @@
-// im kool
-var acurrentElement = document.body;
-var a_enabled = false
-var aEnableKey = "["
+// AutoClicker (haha now ur fork is outdated!)
 
-var css = `
-.autoclicker-alert {
-  display: flex;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background-color: #404040;
-  align-items: center;
-  padding: 7px 8px 7px 5px;
-  border-left: solid red;
-  border-radius: 3px;
-  opacity: 1;
-  z-index: 99999999999;
-  transition: opacity 200ms;
-}
-.autoclicker-alert span {
-  text-align: center;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-`
+const CLICK_THREADS = 10
 
-function sendAlert(text, border) {
-  var style = document.createElement('style');
-  document.head.appendChild(style)
-  style.type = 'text/css';
-  style.appendChild(document.createTextNode(css));
+window.autoClicker = {
+    enabled: false,
+    element: document.body,
+    keybind: "[",
+    sendAlert: (content, color) => {
+        if (!color) {color = "#f5a097"}
+        let alert = document.createElement("div")
+        alert.style = `position: fixed;top: 5px;left: 5px;padding: 6px;padding-left: 7px;border-left: ` + color + ` solid 3px;border-radius: 5px;font-size: 12pt;color: white;background-color: #423934;z-index: 9999;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;`
+        alert.innerHTML = content
+        document.body.appendChild(alert)
 
-  var alert = document.createElement('div')
-  alert.style = "border-left: solid " + border
-  var span = document.createElement('span')
-  alert.classList.add('autoclicker-alert')
-  span.innerText = text
-  alert.appendChild(span)
-
-  document.body.appendChild(alert)
-  
-  setTimeout(function() {alert.style.opacity = 0}, 3000)
-  setTimeout(function() {alert.remove()}, 3200)
+        setTimeout(() => {
+            alert.remove()
+        }, 5000)
+    }
 }
 
-sendAlert("🖱️ Autoclicker loaded!\n Use the [ key to enable!", "lime")
+function clickIntervalFunc() {
+    if (window.autoClicker.enabled) {
+        window.autoClicker.element.click()
+    }
+}
 
 document.addEventListener('mouseover', function (e) {
-    acurrentElement = e.target;
+    window.autoClicker.element = e.target;
 });
-
-var interval = setInterval(function(){}) // make global interval, only temporarily used
 
 window.addEventListener('keydown', function (e) {
-    if (e.key == aEnableKey) {
-        a_enabled = !a_enabled
-        if (a_enabled) {
-            sendAlert("✅ Started clicking!", "lime")
-            interval = setInterval(function() {
-                acurrentElement.click()
-            }, 0)
-        } else {
-            sendAlert("❌ Stopped clicking!", "red")
-            clearInterval(interval)
-        }
+    if (e.key == window.autoClicker.keybind) {
+        window.autoClicker.enabled = !window.autoClicker.enabled
+        window.autoClicker.sendAlert(window.autoClicker.enabled ? "AutoClicker enabled" : "AutoClicker disabled")
     } else if (e.key == "\\") {
-         aEnableKey = prompt("Change keybind:")[0].toLowerCase()   
+        window.autoClicker.keybind = prompt("Switch keybind:")[0].toLowerCase()
     }
-});
+})
 
-
+for (let index = 0; index < CLICK_THREADS; index++) {
+    setInterval(clickIntervalFunc)
+}
