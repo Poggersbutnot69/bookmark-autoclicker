@@ -1,6 +1,6 @@
 // AutoClicker (haha now ur fork is outdated!)
 
-const CLICK_THREADS = 10
+const CLICK_THREADS = 500
 
 window.autoClicker = {
     enabled: false,
